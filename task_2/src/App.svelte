@@ -1,47 +1,56 @@
-<script lang="ts">
-  import svelteLogo from './assets/svelte.svg'
-  import viteLogo from '/vite.svg'
-  import Counter from './lib/Counter.svelte'
+<script lang="js">
+  let cache = {};
+  
+  const requestFunc = async function () {
+    let response = await fetch('https://open.er-api.com/v6/latest/USD');
+    cache = await response.json();
+    console.log(cache)
+    console.log(converter(1, 'RUB', 'EUR'))
+  };
+  const converter = function (x, firstCurrency, secondCurrency) {
+    if (cache.hasOwnProperty('rates')) {
+      let ans = (x/(cache.rates[firstCurrency])) * cache.rates[secondCurrency];
+      return ans
+    };
+  };
+
+  let a;
+  let b;
+  let selected_1;
+  let selected_2;
+
+
+  requestFunc();
+  
 </script>
 
 <main>
-  <div>
-    <a href="https://vitejs.dev" target="_blank" rel="noreferrer">
-      <img src={viteLogo} class="logo" alt="Vite Logo" />
-    </a>
-    <a href="https://svelte.dev" target="_blank" rel="noreferrer">
-      <img src={svelteLogo} class="logo svelte" alt="Svelte Logo" />
-    </a>
-  </div>
-  <h1>Vite + Svelte</h1>
+  <h1>Конвертер валют</h1>
+  <section class="currency_area">
+    <div class="currency_column">
+      <select bind:value={selected_1} on:change={() => b = converter(a, selected_1, selected_2)} name="currency" id="currency-select_1">
+        <option value="">-- Выберите валюту --</option>
+        <option value="RUB">RUB</option>
+        <option value="USD">USD</option>
+        <option value="EUR">EUR</option>
+        <option value="CNY">CNY</option>
+      </select>
+      <input type="number" bind:value={a} on:input={() => b = converter(a, selected_1, selected_2)}/>
+    </div>
+    <div class="currency_column">
+      <select bind:value={selected_2} on:change={() => a = converter(b, selected_2, selected_1)} name="currency" id="currency-select_2">
+        <option value="">-- Выберите валюту --</option>
+        <option value="RUB">RUB</option>
+        <option value="USD">USD</option>
+        <option value="EUR">EUR</option>
+        <option value="CNY">CNY</option>
+      </select>
+      <input type="number" bind:value={b} on:input={() => a = converter(b, selected_2, selected_1)}/>
+    </div>
+  </section>
 
-  <div class="card">
-    <Counter />
-  </div>
-
-  <p>
-    Check out <a href="https://github.com/sveltejs/kit#readme" target="_blank" rel="noreferrer">SvelteKit</a>, the official Svelte app framework powered by Vite!
-  </p>
-
-  <p class="read-the-docs">
-    Click on the Vite and Svelte logos to learn more
-  </p>
 </main>
 
 <style>
-  .logo {
-    height: 6em;
-    padding: 1.5em;
-    will-change: filter;
-    transition: filter 300ms;
-  }
-  .logo:hover {
-    filter: drop-shadow(0 0 2em #646cffaa);
-  }
-  .logo.svelte:hover {
-    filter: drop-shadow(0 0 2em #ff3e00aa);
-  }
-  .read-the-docs {
-    color: #888;
-  }
+
 </style>
