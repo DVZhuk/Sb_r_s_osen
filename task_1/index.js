@@ -28,7 +28,7 @@ const unique = function (encoded, translations) {
         };
     });
     return uniqueNumArr
-}
+};
 
 console.log(decoded(encoded, translations))
 console.log(unique(encoded, translations))
